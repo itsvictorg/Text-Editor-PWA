@@ -3,34 +3,43 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
-// TODO: Add and configure workbox plugins for a service worker and manifest file.
 
 module.exports = () => {
   return {
     mode: 'development',
     entry: {
       main: './src/js/index.js',
-      install: './src/js/install.js'
+      install: './src/js/install.js',
+      database: './src/js/database.js',
+      editor: './src/js/editor.js',
+      header: './src/js/header.js',
     },
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
+      // Webpack plugin that generates our html file and injects our bundles
       new HtmlWebpackPlugin({
         template: './index.html',
-        chunks: ['main'],
-        filename: 'index.html',
+        title: 'JATE'
       }),
+      // Injects our custom servie worker
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'src-sw.js',
+      }),
+      // Creates a manifest.json file.
       new WebpackPwaManifest({
-        name: 'Text Editor PWA',
-        short_name: 'Text Editor',
-        description: 'An application that allows you to write and save notes',
-        background_color: '#01579b',
-        theme_color: '#ffffff',
-        'theme-color': '#ffffff',
+        fingerprints: false,
+        inject: true,
+        name: 'Just Another Text Editor',
+        short_name: 'JATE',
+        description: 'Just another text editor',
+        background_color: '#225ca3',
+        theme_color: '#225ca3',
         start_url: '/',
-        display: 'standalone',
+        publicPath: '/',
         icons: [
           {
             src: path.resolve('src/images/logo.png'),
@@ -39,10 +48,7 @@ module.exports = () => {
           },
         ],
       }),
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        swDest: 'sw.js',
-      }),
+
     ],
 
 
